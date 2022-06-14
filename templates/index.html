@@ -15,6 +15,18 @@
     <div id="temphum"></div>
     <div id="co2tvoc"></div>
     <div id="pm"></div>
+    <div>
+        Valvira air quality info in Finnish
+        <ul>
+            <li><a
+                    href="https://www.valvira.fi/ymparistoterveys/terveydensuojelu/asumisterveys/fysikaaliset_olosuhteet">Temperature
+                    and humidity</a></li>
+            <li><a href="https://www.valvira.fi/ymparistoterveys/terveydensuojelu/asumisterveys/kemikaalit">CO2 and
+                    TVOC</a></li>
+            <li><a href="https://www.valvira.fi/ymparistoterveys/terveydensuojelu/asumisterveys/hiukkaset_ja_kuidut">Airborne
+                    particles</a></li>
+        </ul>
+    </div>
     <script>
 
         const generateTestData = (count, min, max, shouldReturnInteger) => {
@@ -22,7 +34,7 @@
         };
 
         const generateTestTimestamps = (count) => {
-            return Array.from(Array(numberOfDataPoints)).map((_, i) => i);
+            return Array.from(Array(numberOfDataPoints)).map((_, i) => new Date(i * 1000 * 60 * 60));
         }
 
         const numberOfDataPoints = 24;
@@ -93,7 +105,7 @@
         };
 
         const tvocTrace = {
-            name: 'tVOC',
+            name: 'TVOC',
             type: 'scatter',
             x: generateTestTimestamps(numberOfDataPoints),
             y: generateTestData(numberOfDataPoints, 0, 100, false),
@@ -108,7 +120,7 @@
         const co2TvocCanvas = document.getElementById('co2tvoc');
 
         var layout = {
-            title: 'Estimated CO<sub>2</sub> and volatile organic compounds',
+            title: 'Estimated CO<sub>2</sub> and total volatile organic compounds',
             xaxis: {
                 title: 'Time',
                 zeroline: false
@@ -121,7 +133,7 @@
                 rangemode: 'tozero'
             },
             yaxis2: {
-                title: 'tVOC parts per billion',
+                title: 'TVOC parts per billion',
                 titlefont: { color: '#449C4D' },
                 tickfont: { color: '#449C4D' },
                 overlaying: 'y',
@@ -138,7 +150,7 @@
             name: 'PM 2.5',
             type: 'scatter',
             x: generateTestTimestamps(numberOfDataPoints),
-            y: generateTestData(numberOfDataPoints, 300, 1250, false),
+            y: generateTestData(numberOfDataPoints, 0, 50, false),
             line: {
                 color: '#9CA4AB',
                 dash: 'dot',
@@ -150,7 +162,7 @@
             name: 'PM 10',
             type: 'scatter',
             x: generateTestTimestamps(numberOfDataPoints),
-            y: generateTestData(numberOfDataPoints, 0, 100, false),
+            y: generateTestData(numberOfDataPoints, 0, 25, false),
             line: {
                 color: '#26292C',
                 dash: 'dashdot',
@@ -172,7 +184,8 @@
                 titlefont: { color: '#9CA4AB' },
                 tickfont: { color: '#9CA4AB' },
                 showline: false,
-                rangemode: 'tozero'
+                rangemode: 'tozero',
+                range: [0, 50]
             },
             yaxis2: {
                 title: 'Sub 10μm particles mg/m3',
@@ -182,7 +195,8 @@
                 side: 'right',
                 showline: false,
                 showgrid: false,
-                rangemode: 'tozero'
+                rangemode: 'tozero',
+                range: [0, 50]
             }
         };
 
