@@ -13,3 +13,14 @@ body {
 a {
     text-decoration: none;
 }
+
+#container {
+    display: flex;
+    flex-direction: column;
+}
+
+#info {
+    margin-top: 1em;
+    align-self: center;
+    flex-basis: 100%;
+}
