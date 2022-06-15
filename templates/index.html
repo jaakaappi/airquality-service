@@ -12,196 +12,192 @@
 </head>
 
 <body>
-    <div id="temphum"></div>
-    <div id="co2tvoc"></div>
-    <div id="pm"></div>
-    <div>
-        Valvira air quality info in Finnish
-        <ul>
-            <li><a
-                    href="https://www.valvira.fi/ymparistoterveys/terveydensuojelu/asumisterveys/fysikaaliset_olosuhteet">Temperature
-                    and humidity</a></li>
-            <li><a href="https://www.valvira.fi/ymparistoterveys/terveydensuojelu/asumisterveys/kemikaalit">CO<sub>2</sub>
-                    and
-                    TVOC</a></li>
-            <li><a href="https://www.valvira.fi/ymparistoterveys/terveydensuojelu/asumisterveys/hiukkaset_ja_kuidut">Airborne
-                    particles</a></li>
-        </ul>
+    <div id="container">
+        <div id="temphum"></div>
+        <div id="co2tvoc"></div>
+        <div id="pm"></div>
+        <footer id="info">
+            Valvira air quality info in Finnish: <a
+                href="https://www.valvira.fi/ymparistoterveys/terveydensuojelu/asumisterveys/fysikaaliset_olosuhteet">temperature
+                and humidity</a>,
+            <a href="https://www.valvira.fi/ymparistoterveys/terveydensuojelu/asumisterveys/kemikaalit">CO<sub>2</sub>
+                and
+                TVOC</a>,
+            <a href="https://www.valvira.fi/ymparistoterveys/terveydensuojelu/asumisterveys/hiukkaset_ja_kuidut">airborne
+                particles</a>.
+            </ul>
+        </footer>
     </div>
     <script>
+        const createGraphs = (data) => {
+            var config = { responsive: true }
 
-        const generateTestData = (count, min, max, shouldReturnInteger) => {
-            return Array.from(Array(count)).map(() => Math.random() * (max - min) + min);
-        };
+            const temperatureTrace = {
+                name: 'Temperature',
+                type: 'scatter',
+                x: data['temperature']['x'],
+                y: data['temperature']['y'],
+                line: {
+                    color: '#E20703',
+                    width: 3
+                }
+            };
+            const humidityTrace = {
+                name: 'Humidity',
+                type: 'scatter',
+                x: data['humidity']['x'],
+                y: data['humidity']['y'],
+                line: {
+                    color: '#0069CC',
+                    dash: 'dashdot',
+                    width: 3
+                },
+                yaxis: 'y2',
+            };
+            var tempHumLayout = {
+                title: 'Temperature and humidity',
+                xaxis: {
+                    title: 'Time',
+                    zeroline: false
+                },
+                yaxis: {
+                    title: 'Temperature °C',
+                    titlefont: { color: '#E20703' },
+                    tickfont: { color: '#E20703' },
+                    showline: false,
+                    range: [-30, 30]
+                },
+                yaxis2: {
+                    title: 'Relative humidity %',
+                    titlefont: { color: '#0069CC' },
+                    tickfont: { color: '#0069CC' },
+                    overlaying: 'y',
+                    side: 'right',
+                    showline: false,
+                    showgrid: false,
+                    range: [0, 100]
+                }
+            };
 
-        const generateTestTimestamps = (count) => {
-            return Array.from(Array(numberOfDataPoints)).map((_, i) => new Date(i * 1000 * 60 * 60));
+            const tempHumCanvas = document.getElementById('temphum');
+            Plotly.newPlot(tempHumCanvas, [temperatureTrace, humidityTrace], tempHumLayout, config);
+
+            const co2Trace = {
+                name: 'eCO<sup>2</sup>',
+                type: 'scatter',
+                x: data['co2']['x'],
+                y: data['co2']['y'],
+                line: {
+                    color: '#D0A339',
+                    dash: 'dot',
+                    width: 3
+                }
+            };
+
+            const tvocTrace = {
+                name: 'TVOC',
+                type: 'scatter',
+                x: data['tvoc']['x'],
+                y: data['tvoc']['y'],
+                line: {
+                    color: '#449C4D',
+                    dash: 'dashdot',
+                    width: 3
+                },
+                yaxis: 'y2',
+            };
+
+            const co2TvocCanvas = document.getElementById('co2tvoc');
+
+            var co2TvocLayout = {
+                title: 'Estimated CO<sub>2</sub> and total volatile organic compounds',
+                xaxis: {
+                    title: 'Time',
+                    zeroline: false
+                },
+                yaxis: {
+                    title: 'eCO<sub>2</sub> parts per million',
+                    titlefont: { color: '#D0A339' },
+                    tickfont: { color: '#D0A339' },
+                    showline: false,
+                    rangemode: 'tozero'
+                },
+                yaxis2: {
+                    title: 'TVOC parts per billion',
+                    titlefont: { color: '#449C4D' },
+                    tickfont: { color: '#449C4D' },
+                    overlaying: 'y',
+                    side: 'right',
+                    showline: false,
+                    showgrid: false,
+                    rangemode: 'tozero'
+                }
+            };
+
+            Plotly.newPlot(co2TvocCanvas, [co2Trace, tvocTrace], co2TvocLayout, config);
+
+            const pm25 = {
+                name: 'PM 2.5',
+                type: 'scatter',
+                x: data['pm25']['x'],
+                y: data['pm25']['y'],
+                line: {
+                    color: '#9CA4AB',
+                    dash: 'dot',
+                    width: 3
+                }
+            };
+
+            const pm10 = {
+                name: 'PM 10',
+                type: 'scatter',
+                x: data['pm10']['x'],
+                y: data['pm10']['y'],
+                line: {
+                    color: '#26292C',
+                    dash: 'dashdot',
+                    width: 3
+                },
+                yaxis: 'y2',
+            };
+
+            const pmCanvas = document.getElementById('pm');
+
+            var pmLayout = {
+                title: 'Particulate matter',
+                xaxis: {
+                    title: 'Time',
+                    zeroline: false
+                },
+                yaxis: {
+                    title: 'Sub 2.5μm particles μg/m<sup>3</sup>',
+                    titlefont: { color: '#9CA4AB' },
+                    tickfont: { color: '#9CA4AB' },
+                    showline: false,
+                    rangemode: 'tozero',
+                    range: [0, 50]
+                },
+                yaxis2: {
+                    title: 'Sub 10μm particles μg/m<sup>3</sup>',
+                    titlefont: { color: '#26292C' },
+                    tickfont: { color: '#26292C' },
+                    overlaying: 'y',
+                    side: 'right',
+                    showline: false,
+                    showgrid: false,
+                    rangemode: 'tozero',
+                    range: [0, 50]
+                }
+            };
+
+            Plotly.newPlot(pmCanvas, [pm25, pm10], pmLayout, config);
         }
 
-        const numberOfDataPoints = 24;
-
-        const temperatureTrace = {
-            name: 'Temperature',
-            type: 'scatter',
-            x: generateTestTimestamps(numberOfDataPoints),
-            y: generateTestData(numberOfDataPoints, 20, 30, false),
-            line: {
-                color: '#E20703',
-                width: 3
-            }
-        };
-
-        const humidityTrace = {
-            name: 'Humidity',
-            type: 'scatter',
-            x: generateTestTimestamps(numberOfDataPoints),
-            y: generateTestData(numberOfDataPoints, 20, 30, false),
-            line: {
-                color: '#0069CC',
-                dash: 'dashdot',
-                width: 3
-            },
-            yaxis: 'y2',
-        };
-
-        const tempHumCanvas = document.getElementById('temphum');
-
-        var layout = {
-            title: 'Temperature and humidity',
-            xaxis: {
-                title: 'Time',
-                zeroline: false
-            },
-            yaxis: {
-                title: 'Temperature °C',
-                titlefont: { color: '#E20703' },
-                tickfont: { color: '#E20703' },
-                showline: false,
-                range: [-30, 30]
-            },
-            yaxis2: {
-                title: 'Relative humidity %',
-                titlefont: { color: '#0069CC' },
-                tickfont: { color: '#0069CC' },
-                overlaying: 'y',
-                side: 'right',
-                showline: false,
-                showgrid: false,
-                range: [0, 100]
-            }
-        };
-
-        Plotly.newPlot(tempHumCanvas, [temperatureTrace, humidityTrace], layout);
-
-        const co2Trace = {
-            name: 'eCO<sup>2</sup>',
-            type: 'scatter',
-            x: generateTestTimestamps(numberOfDataPoints),
-            y: generateTestData(numberOfDataPoints, 300, 1250, false),
-            line: {
-                color: '#D0A339',
-                dash: 'dot',
-                width: 3
-            }
-        };
-
-        const tvocTrace = {
-            name: 'TVOC',
-            type: 'scatter',
-            x: generateTestTimestamps(numberOfDataPoints),
-            y: generateTestData(numberOfDataPoints, 0, 100, false),
-            line: {
-                color: '#449C4D',
-                dash: 'dashdot',
-                width: 3
-            },
-            yaxis: 'y2',
-        };
-
-        const co2TvocCanvas = document.getElementById('co2tvoc');
-
-        var layout = {
-            title: 'Estimated CO<sub>2</sub> and total volatile organic compounds',
-            xaxis: {
-                title: 'Time',
-                zeroline: false
-            },
-            yaxis: {
-                title: 'eCO<sub>2</sub> parts per million',
-                titlefont: { color: '#D0A339' },
-                tickfont: { color: '#D0A339' },
-                showline: false,
-                rangemode: 'tozero'
-            },
-            yaxis2: {
-                title: 'TVOC parts per billion',
-                titlefont: { color: '#449C4D' },
-                tickfont: { color: '#449C4D' },
-                overlaying: 'y',
-                side: 'right',
-                showline: false,
-                showgrid: false,
-                rangemode: 'tozero'
-            }
-        };
-
-        Plotly.newPlot(co2TvocCanvas, [co2Trace, tvocTrace], layout);
-
-        const pm25 = {
-            name: 'PM 2.5',
-            type: 'scatter',
-            x: generateTestTimestamps(numberOfDataPoints),
-            y: generateTestData(numberOfDataPoints, 0, 50, false),
-            line: {
-                color: '#9CA4AB',
-                dash: 'dot',
-                width: 3
-            }
-        };
-
-        const pm10 = {
-            name: 'PM 10',
-            type: 'scatter',
-            x: generateTestTimestamps(numberOfDataPoints),
-            y: generateTestData(numberOfDataPoints, 0, 25, false),
-            line: {
-                color: '#26292C',
-                dash: 'dashdot',
-                width: 3
-            },
-            yaxis: 'y2',
-        };
-
-        const pmCanvas = document.getElementById('pm');
-
-        var layout = {
-            title: 'Particulate matter',
-            xaxis: {
-                title: 'Time',
-                zeroline: false
-            },
-            yaxis: {
-                title: 'Sub 2.5μm particles μg/m<sup>3</sup>',
-                titlefont: { color: '#9CA4AB' },
-                tickfont: { color: '#9CA4AB' },
-                showline: false,
-                rangemode: 'tozero',
-                range: [0, 50]
-            },
-            yaxis2: {
-                title: 'Sub 10μm particles μg/m<sup>3</sup>',
-                titlefont: { color: '#26292C' },
-                tickfont: { color: '#26292C' },
-                overlaying: 'y',
-                side: 'right',
-                showline: false,
-                showgrid: false,
-                rangemode: 'tozero',
-                range: [0, 50]
-            }
-        };
-
-        Plotly.newPlot(pmCanvas, [pm25, pm10], layout);
+        fetch('/api')
+            .then(response => response.json())
+            .then(data => {
+                createGraphs(data);
+            });
     </script>
 </body>
 
