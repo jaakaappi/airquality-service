@@ -17,8 +17,24 @@ def init_routes(app, cosmos_container):
             query=query,
             enable_cross_partition_query=True
         ))
-        print(items)
-        return {'data': items}
+        request_charge = cosmos_container.client_connection.last_response_headers['x-ms-request-charge']
+        print('Operation consumed {0} request units'.format(request_charge))
+        
+        json = {
+            "temperature": {"x": [], "y": []},
+            "humidity": {"x": [], "y": []},
+            "co2": {"x": [], "y": []},
+            "tvoc": {"x": [], "y": []},
+            "pm25": {"x": [], "y": []},
+            "pm10": {"x": [], "y": []},
+        }
+        for item in items:
+            for key, value in item.items():
+                if key != 'timestamp':
+                    json[key]['y'].append(value)
+                    json[key]['x'].append(item['timestamp'])
+
+        return json
 
     @app.route("/api", methods=['POST'])
     def append_data():
@@ -29,9 +45,10 @@ def init_routes(app, cosmos_container):
             'timestamp': timestamp,
             **request.json
         }
-        print(_data)
 
         cosmos_container.create_item(_data)
+        request_charge = cosmos_container.client_connection.last_response_headers['x-ms-request-charge']
+        print('Operation consumed {0} request units'.format(request_charge))
 
         return Response(status=200)
 
@@ -57,6 +74,7 @@ def main():
                                  'C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==')
     cosmos_container = init_cosmos(cosmos_client)
     app = init_routes(app, cosmos_container)
+    app.register_error_handler(400, lambda e: print(e))
     app.run(host='0.0.0.0')
 
 
