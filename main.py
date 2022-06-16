@@ -12,7 +12,8 @@ def init_routes(app, cosmos_container):
 
     @app.route("/api", methods=['GET'])
     def get_data():
-        query = 'SELECT TOP 60 c.co2, c.humidity, c.temperature, c.pm25, c.pm10, c.tvoc, c.timestamp FROM c ORDER BY c.timestamp DESC'
+        #query = 'SELECT TOP 144 c.co2, c.humidity, c.temperature, c.pm25, c.pm10, c.tvoc, c.timestamp FROM c ORDER BY c.timestamp DESC'
+        query = 'SELECT c.co2, c.humidity, c.temperature, c.pm25, c.pm10, c.tvoc, c.timestamp FROM c ORDER BY c.timestamp DESC'
         items = list(cosmos_container.query_items(
             query=query,
             enable_cross_partition_query=True

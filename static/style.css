@@ -17,10 +17,18 @@ a {
 #container {
     display: flex;
     flex-direction: column;
+    max-height: 100%;
+    max-width: 1920px;
+    margin: auto;
 }
 
 #info {
     margin-top: 1em;
+    padding: 10px;
     align-self: center;
     flex-basis: 100%;
+}
+
+#temphum #co2tvoc #pm {
+    flex-shrink: 3;
 }
