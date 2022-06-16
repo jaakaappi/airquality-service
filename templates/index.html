@@ -22,7 +22,7 @@
                 and humidity</a>,
             <a href="https://www.valvira.fi/ymparistoterveys/terveydensuojelu/asumisterveys/kemikaalit">CO<sub>2</sub>
                 and
-                TVOC</a>,
+                TVOC</a> and
             <a href="https://www.valvira.fi/ymparistoterveys/terveydensuojelu/asumisterveys/hiukkaset_ja_kuidut">airborne
                 particles</a>.
             </ul>
@@ -30,7 +30,7 @@
     </div>
     <script>
         const createGraphs = (data) => {
-            var config = { responsive: true }
+            var config = { responsive: true, staticPlot: true }
 
             const temperatureTrace = {
                 name: 'Temperature',
@@ -65,7 +65,6 @@
                     titlefont: { color: '#E20703' },
                     tickfont: { color: '#E20703' },
                     showline: false,
-                    range: [-30, 30]
                 },
                 yaxis2: {
                     title: 'Relative humidity %',
@@ -75,7 +74,10 @@
                     side: 'right',
                     showline: false,
                     showgrid: false,
-                    range: [0, 100]
+                },
+                legend: {
+                    x: 0,
+                    y: -0.25
                 }
             };
 
@@ -120,7 +122,6 @@
                     titlefont: { color: '#D0A339' },
                     tickfont: { color: '#D0A339' },
                     showline: false,
-                    rangemode: 'tozero'
                 },
                 yaxis2: {
                     title: 'TVOC parts per billion',
@@ -130,7 +131,10 @@
                     side: 'right',
                     showline: false,
                     showgrid: false,
-                    rangemode: 'tozero'
+                },
+                legend: {
+                    x: 0,
+                    y: -0.25
                 }
             };
 
@@ -174,8 +178,6 @@
                     titlefont: { color: '#9CA4AB' },
                     tickfont: { color: '#9CA4AB' },
                     showline: false,
-                    rangemode: 'tozero',
-                    range: [0, 50]
                 },
                 yaxis2: {
                     title: 'Sub 10μm particles μg/m<sup>3</sup>',
@@ -185,8 +187,10 @@
                     side: 'right',
                     showline: false,
                     showgrid: false,
-                    rangemode: 'tozero',
-                    range: [0, 50]
+                },
+                legend: {
+                    x: 0,
+                    y: -0.25
                 }
             };
 

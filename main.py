@@ -12,14 +12,14 @@ def init_routes(app, cosmos_container):
 
     @app.route("/api", methods=['GET'])
     def get_data():
-        query = 'SELECT TOP 60 c.co2, c.humidity, c.temperature, c.pm25, c.pm10, c.tvoc, c.timestamp FROM c ORDER BY c.timestamp'
+        query = 'SELECT TOP 60 c.co2, c.humidity, c.temperature, c.pm25, c.pm10, c.tvoc, c.timestamp FROM c ORDER BY c.timestamp DESC'
         items = list(cosmos_container.query_items(
             query=query,
             enable_cross_partition_query=True
         ))
         request_charge = cosmos_container.client_connection.last_response_headers['x-ms-request-charge']
         print('Operation consumed {0} request units'.format(request_charge))
-        
+
         json = {
             "temperature": {"x": [], "y": []},
             "humidity": {"x": [], "y": []},
