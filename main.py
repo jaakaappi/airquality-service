@@ -1,3 +1,4 @@
+import os
 import uuid
 from datetime import datetime
 from azure.cosmos import CosmosClient, PartitionKey
@@ -12,7 +13,7 @@ def init_routes(app, cosmos_container):
 
     @app.route("/api", methods=['GET'])
     def get_data():
-        #query = 'SELECT TOP 144 c.co2, c.humidity, c.temperature, c.pm25, c.pm10, c.tvoc, c.timestamp FROM c ORDER BY c.timestamp DESC'
+        # query = 'SELECT TOP 144 c.co2, c.humidity, c.temperature, c.pm25, c.pm10, c.tvoc, c.timestamp FROM c ORDER BY c.timestamp DESC'
         query = 'SELECT c.co2, c.humidity, c.temperature, c.pm25, c.pm10, c.tvoc, c.timestamp FROM c ORDER BY c.timestamp DESC'
         items = list(cosmos_container.query_items(
             query=query,
@@ -63,19 +64,21 @@ def init_cosmos(client):
     container_name = 'airquality-container'
     container = database.create_container_if_not_exists(
         id=container_name,
-        partition_key=PartitionKey(path="/timestamp"),
-        offer_throughput=400
+        partition_key=PartitionKey(path="/timestamp")
     )
     return container
 
 
 def main():
     app = Flask(__name__)
-    cosmos_client = CosmosClient('https://localhost:8081',
-                                 'C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==')
+    if 'ENVIRONMENT' not in os.environ.keys() or os.environ['ENVIRONMENT'] != 'PRODUCTION':
+        cosmos_client = CosmosClient('https://localhost:8081',
+                                     'C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==')
+    else:
+        cosmos_client = CosmosClient(os.environ['COSMOS_DB_URI'], os.environ['COSMOS_DB_KEY'])
     cosmos_container = init_cosmos(cosmos_client)
     app = init_routes(app, cosmos_container)
-    app.register_error_handler(400, lambda e: print(e))
+    # app.register_error_handler(400, lambda e: print(e))
     app.run(host='0.0.0.0')
 
 
