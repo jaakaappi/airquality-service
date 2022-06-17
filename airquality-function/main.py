@@ -6,7 +6,9 @@ import logging
 from azure.functions import HttpRequest, HttpResponse, Context, WsgiMiddleware
 from azure.cosmos import CosmosClient, PartitionKey
 from flask import Flask, request, render_template, Response
+from pytz import timezone
 
+logger = logging.getLogger('airquality')
 
 def init_routes(app, cosmos_container):
     @app.route('/')
@@ -43,7 +45,7 @@ def init_routes(app, cosmos_container):
     @app.route("/api", methods=['POST'])
     def append_data():
         print(request.json)
-        timestamp = datetime.now().isoformat()
+        timestamp = timezone('Europe/Helsinki').localize(datetime.now()).isoformat()
         _data = {
             'id': str(uuid.uuid4()),
             'timestamp': timestamp,
@@ -70,6 +72,12 @@ def init_cosmos(client):
     )
     return container
 
+def init_logging():
+    logger.setLevel(logging.DEBUG)
+    sh = logging.StreamHandler()
+    sh.setLevel(logging.DEBUG)
+    logger.addHandler(sh)
+    logger.debug('Logger ready')
 
 def main(req: HttpRequest, context: Context)-> HttpResponse:
     app = Flask(__name__)

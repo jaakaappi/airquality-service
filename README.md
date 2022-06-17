@@ -5,9 +5,9 @@ Flask Python API and HTTP server for saving data and serving chart page for http
 ## Running locally
 Install Azure Functions Core Tools, Azure CLI, Python 3.9
 
-Set env vars:
+Set env vars (prepend `set ` if on Windows):
 ```
-ENVIRONMENT=PRODUCTION
+ENVIRONMENT=PRODUCTION;
 COSMOS_DB_URI=<get this from Azure>
 COSMOS_DB_KEY=<get this from Azure>
 ```
@@ -18,14 +18,19 @@ func start --python --port 5000
 ```
 
 ## Deployment
+Set COSMOS_DB_URI and COSMOS_DB_KEY in app settings
+
+
 ```commandline
 az login
-func azure functionapp publish airquality-function-app --python
+func azure functionapp publish <function-app-name> --python
 ```
 
 ## Monitoring
 
-In Azure, function app > functions > logs > monitor
+```commandline
+func azure functionapp logstream airquality-function-app --browser
+```
 
 ## Todo:
 - axis tick scales
