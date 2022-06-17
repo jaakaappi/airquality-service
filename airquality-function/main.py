@@ -1,8 +1,10 @@
 import os
 import uuid
 from datetime import datetime
-from azure.cosmos import CosmosClient, PartitionKey
+import logging
 
+from azure.functions import HttpRequest, HttpResponse, Context, WsgiMiddleware
+from azure.cosmos import CosmosClient, PartitionKey
 from flask import Flask, request, render_template, Response
 
 
@@ -69,18 +71,14 @@ def init_cosmos(client):
     return container
 
 
-def main():
+def main(req: HttpRequest, context: Context)-> HttpResponse:
     app = Flask(__name__)
-    if 'ENVIRONMENT' not in os.environ.keys() or os.environ['ENVIRONMENT'] != 'PRODUCTION':
-        cosmos_client = CosmosClient('https://localhost:8081',
-                                     'C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==')
-    else:
-        cosmos_client = CosmosClient(os.environ['COSMOS_DB_URI'], os.environ['COSMOS_DB_KEY'])
+    if 'COSMOS_DB_URI' not in os.environ.keys() or 'COSMOS_DB_KEY' not in os.environ.keys():
+        logging.error('Missing Cosmos DB env vars!')
+        exit(1)
+    cosmos_client = CosmosClient(os.environ['COSMOS_DB_URI'], os.environ['COSMOS_DB_KEY'])
     cosmos_container = init_cosmos(cosmos_client)
     app = init_routes(app, cosmos_container)
     # app.register_error_handler(400, lambda e: print(e))
-    app.run(host='0.0.0.0')
 
-
-if __name__ == '__main__':
-    main()
+    return WsgiMiddleware(app.wsgi_app).handle(req, context)
