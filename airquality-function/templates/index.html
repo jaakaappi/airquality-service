@@ -7,7 +7,6 @@
     <title>Air quality</title>
 
     <link rel="stylesheet" href="/static/style.css">
-    <script src="/static/plotly.min.js"></script>
     <script src="/static/moment.min.js"></script>
     <script src="/static/chart.min.js"></script>
     <script src="/static/chartjs-adapter-moment.min.js"></script>
@@ -16,12 +15,12 @@
 <body>
     <div id="container">
         <div class="buttoncontainer">
-            <button>Hour</button>
-            <button>Day</button>
-            <button>Week</button>
-            <button>Month</button>
-            <button>Year</button>
-            <button>All</button>
+            <button onclick="handleButtonChanged(event)">Hour</button>
+            <button id="dayButton" onclick="handleButtonChanged(event)">Day</button>
+            <button onclick="handleButtonChanged(event)">Week</button>
+            <button onclick="handleButtonChanged(event)">Month</button>
+            <button onclick="handleButtonChanged(event)">Year</button>
+            <button onclick="handleButtonChanged(event)">All</button>
         </div>
         <div style="position: relative; height: 30%;">
             <canvas id="temphum"></canvas>
@@ -45,6 +44,9 @@
         </div>
     </div>
     <script>
+        let lastPressedButton = document.getElementById('dayButton');
+        lastPressedButton.style.borderStyle = 'inset';
+
         const createGraphs = (data) => {
             const temperatureHumidityData = {
                 labels: data['temperature']['x'],
@@ -222,11 +224,39 @@
             );
         }
 
-        fetch('/api')
-            .then(response => response.json())
-            .then(data => {
-                createGraphs(data);
-            });
+        const updateCharts = (data) => {
+            [{ 'temphum': ['temperature', 'humidity'] }, { 'co2tvoc': ['co2', 'tvoc'] }, { 'pm': ['pm25', 'pm10'] }].forEach((object) => {
+                const id = Object.keys(object)[0];
+                const chart = Chart.getChart(id);
+                chart.data.labels = data[Object.values(object[id])[0]]['x'];
+                chart.data.datasets[0].data = data[Object.values(object[id])[0]]['y'];
+                chart.data.datasets[1].data = data[Object.values(object[id])[1]]['y'];
+                chart.update();
+            })
+        }
+
+        const getData = (resolution = 'day') => {
+            return fetch(`/api?resolution=${resolution}`)
+                .then(response => response.json())
+                .then(data => {
+                    return data;
+                });
+        }
+
+        const handleButtonChanged = (e) => {
+            if (e.target.innerHTML != lastPressedButton.innerHTML) {
+                lastPressedButton.style.borderStyle = 'outset';
+                e.target.style.borderStyle = 'inset';
+                lastPressedButton = e.target;
+                getData(e.target.innerHTML.toLowerCase()).then(data => {
+                    updateCharts(data);
+                });
+            }
+        }
+
+        getData().then(data => {
+            createGraphs(data);
+        });
     </script>
 </body>
 
