@@ -8,7 +8,11 @@ from azure.cosmos import CosmosClient, PartitionKey
 from flask import Flask, request, render_template, Response
 from pytz import timezone
 
+resolutions = {'hour': 60 * 60, 'day': 24 * 60 * 60, 'week': 7 * 24 * 60 * 60, 'month': 30 * 26 * 60 * 60,
+               'year': 365 * 24 * 60 * 60, 'all': ''}
+
 logger = logging.getLogger('airquality')
+
 
 def init_routes(app, cosmos_container):
     @app.route('/')
@@ -17,8 +21,17 @@ def init_routes(app, cosmos_container):
 
     @app.route("/api", methods=['GET'])
     def get_data():
-        # query = 'SELECT TOP 144 c.co2, c.humidity, c.temperature, c.pm25, c.pm10, c.tvoc, c.timestamp FROM c ORDER BY c.timestamp DESC'
-        query = 'SELECT c.co2, c.humidity, c.temperature, c.pm25, c.pm10, c.tvoc, c.timestamp FROM c ORDER BY c.timestamp DESC'
+        resolution = request.args.get('resolution')
+        if resolution is None:
+            resolution = 'day'
+        elif resolution not in resolutions:
+            return 'Bad resolution parameter', 400
+
+        if resolution == 'all':
+            query = f'SELECT c.co2, c.humidity, c.temperature, c.pm25, c.pm10, c.tvoc, c.timestamp FROM c ORDER BY c.timestamp DESC'
+        else:
+            query = f'SELECT c.co2, c.humidity, c.temperature, c.pm25, c.pm10, c.tvoc, c.timestamp FROM c WHERE c._ts > GetCurrentTimestamp() / 1000 - {resolutions[resolution]} ORDER BY c.timestamp DESC'
+
         items = list(cosmos_container.query_items(
             query=query,
             enable_cross_partition_query=True
@@ -72,6 +85,7 @@ def init_cosmos(client):
     )
     return container
 
+
 def init_logging():
     logger.setLevel(logging.DEBUG)
     sh = logging.StreamHandler()
@@ -79,7 +93,8 @@ def init_logging():
     logger.addHandler(sh)
     logger.debug('Logger ready')
 
-def main(req: HttpRequest, context: Context)-> HttpResponse:
+
+def main(req: HttpRequest, context: Context) -> HttpResponse:
     app = Flask(__name__)
     if 'COSMOS_DB_URI' not in os.environ.keys() or 'COSMOS_DB_KEY' not in os.environ.keys():
         logging.error('Missing Cosmos DB env vars!')

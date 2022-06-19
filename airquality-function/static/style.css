@@ -32,3 +32,27 @@ a {
 #temphum #co2tvoc #pm {
     flex-shrink: 3;
 }
+
+.buttoncontainer {
+    display: inline-flex;
+    justify-content: center;
+    padding: 10px;
+}
+
+.buttoncontainer>button {
+    padding: 5px 10px 5px 10px;
+    border: 0 2px 0 0;
+    border-radius: 0;
+}
+
+.buttoncontainer>button:first-child {
+    padding-left: 15px;
+    border: 0 2px 0 0;
+    border-radius: 5px 0 0 5px;
+}
+
+.buttoncontainer>button:last-child {
+    padding-right: 15px;
+    border: 0 0 0 2px;
+    border-radius: 0 5px 5px 0;
+}
