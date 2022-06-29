@@ -36,3 +36,5 @@ func azure functionapp logstream airquality-function-app --browser
 - axis tick scales
 - button for time ranges / scrollable chart? https://www.chartjs.org/chartjs-plugin-zoom/latest/guide/options.html
 - dark mode with settings saving
+- fix graph timestamps to utc+3
+- fix page width on pc
