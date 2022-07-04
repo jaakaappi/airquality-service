@@ -6,11 +6,8 @@
     }
   },
   "logging": {
-    "logLevel": {
-      "default": "Debug",
-      "Host": "Error",
-      "Function": "Debug",
-      "Host.Aggregator": "Warning"
+    "console": {
+      "enabled": true
     }
   }
 }

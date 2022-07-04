@@ -14,13 +14,16 @@
 
 <body>
     <div id="container">
-        <div class="buttoncontainer">
-            <button onclick="handleButtonChanged(event)">Hour</button>
-            <button id="dayButton" onclick="handleButtonChanged(event)">Day</button>
-            <button onclick="handleButtonChanged(event)">Week</button>
-            <button onclick="handleButtonChanged(event)">Month</button>
-            <button onclick="handleButtonChanged(event)">Year</button>
-            <button onclick="handleButtonChanged(event)">All</button>
+        <div id="controlcontainer">
+            <div id="buttoncontainer">
+                <button onclick="handleButtonChanged(event)">6 Hours</button>
+                <button id="dayButton" onclick="handleButtonChanged(event)">Day</button>
+                <button onclick="handleButtonChanged(event)">Week</button>
+                <button onclick="handleButtonChanged(event)">Month</button>
+                <button onclick="handleButtonChanged(event)">Year</button>
+                <button onclick="handleButtonChanged(event)">All</button>
+            </div>
+            <img id="spinner" src="/static/spinner.png" />
         </div>
         <div style="position: relative; height: 30%;">
             <canvas id="temphum"></canvas>
@@ -116,7 +119,7 @@
                     data: data['co2']['y'],
                     yAxisID: 'y',
                 }, {
-                    label: 'Carbon monoxide, ammonia, ethanol, methane, propane, isobutane parts per million',
+                    label: 'CO, ammonia, ethanol, methane, propane, isobutane parts per million',
                     borderColor: '#54e346',
                     backgroundColor: '#54e346',
                     data: data['tvoc']['y'],
@@ -245,17 +248,20 @@
 
         const handleButtonChanged = (e) => {
             if (e.target.innerHTML != lastPressedButton.innerHTML) {
+                document.getElementById('spinner').style.display = 'block';
                 lastPressedButton.style.borderStyle = 'outset';
                 e.target.style.borderStyle = 'inset';
                 lastPressedButton = e.target;
                 getData(e.target.innerHTML.toLowerCase()).then(data => {
                     updateCharts(data);
+                    document.getElementById('spinner').style.display = 'none';
                 });
             }
         }
 
         getData().then(data => {
             createGraphs(data);
+            document.getElementById('spinner').style.display = 'none';
         });
     </script>
 </body>

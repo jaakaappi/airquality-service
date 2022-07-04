@@ -8,7 +8,7 @@ from azure.cosmos import CosmosClient, PartitionKey
 from flask import Flask, request, render_template, Response
 from pytz import timezone
 
-resolutions = {'hour': 60 * 60, 'day': 24 * 60 * 60, 'week': 7 * 24 * 60 * 60, 'month': 30 * 26 * 60 * 60,
+resolutions = {'6 hours': 6 * 60 * 60, 'day': 24 * 60 * 60, 'week': 7 * 24 * 60 * 60, 'month': 30 * 26 * 60 * 60,
                'year': 365 * 24 * 60 * 60, 'all': ''}
 
 logger = logging.getLogger('airquality')
@@ -37,7 +37,7 @@ def init_routes(app, cosmos_container):
             enable_cross_partition_query=True
         ))
         request_charge = cosmos_container.client_connection.last_response_headers['x-ms-request-charge']
-        print('Operation consumed {0} request units'.format(request_charge))
+        logger.info('Operation consumed {0} request units'.format(request_charge))
 
         json = {
             "temperature": {"x": [], "y": []},
@@ -67,7 +67,7 @@ def init_routes(app, cosmos_container):
 
         cosmos_container.create_item(_data)
         request_charge = cosmos_container.client_connection.last_response_headers['x-ms-request-charge']
-        print('Operation consumed {0} request units'.format(request_charge))
+        logger.info('Operation consumed {0} request units'.format(request_charge))
 
         return Response(status=200)
 

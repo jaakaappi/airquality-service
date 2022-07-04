@@ -29,7 +29,7 @@ func azure functionapp publish <function-app-name> --python
 ## Monitoring
 
 ```commandline
-func azure functionapp logstream airquality-function-app --browser
+func azure functionapp logstream <function-app-name> --browser
 ```
 
 ## Todo:

@@ -5,9 +5,10 @@ html {
 
 body {
     width: 100%;
+    max-width: 720px;
     height: 100%;
     font-family: sans-serif;
-    margin: 0;
+    margin: 0 auto 0 auto;
 }
 
 a {
@@ -22,6 +23,29 @@ a {
     margin: auto;
 }
 
+@keyframes spin {
+    from {
+
+        transform: rotate(0deg);
+    }
+
+    to {
+
+        transform: rotate(360deg);
+    }
+}
+
+#spinner {
+    padding: 10px;
+    max-height: 1.75em;
+    justify-content: center;
+    margin-left: 5px;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+    animation-name: spin;
+    animation-timing-function: linear;
+}
+
 #info {
     margin-top: 1em;
     padding: 10px;
@@ -33,25 +57,31 @@ a {
     flex-shrink: 3;
 }
 
-.buttoncontainer {
+#controlcontainer {
     display: inline-flex;
-    justify-content: center;
-    padding: 10px;
+    flex-direction: row;
 }
 
-.buttoncontainer>button {
+#buttoncontainer {
+    display: inline-flex;
+    justify-content: flex-end;
+    flex-basis: 70%;
+    padding: 10px 0 10px 10px;
+}
+
+#buttoncontainer>button {
     padding: 5px 10px 5px 10px;
     border: 0 2px 0 0;
     border-radius: 0;
 }
 
-.buttoncontainer>button:first-child {
+#buttoncontainer>button:first-child {
     padding-left: 15px;
     border: 0 2px 0 0;
     border-radius: 5px 0 0 5px;
 }
 
-.buttoncontainer>button:last-child {
+#buttoncontainer>button:last-of-type {
     padding-right: 15px;
     border: 0 0 0 2px;
     border-radius: 0 5px 5px 0;
